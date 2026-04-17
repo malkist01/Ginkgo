@@ -91,9 +91,8 @@ jobs:
          fi
     - name: Setup Aosp Clang
       run: |
-            aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/4d2864f08ff2c290563fb903a5156e0504620bbe/clang-r563880c.tar.gz
             mkdir $HOME/clang -p -v
-            tar -C $HOME/clang -zxf aosp-clang.tar.gz            
+            git clone --depth=1 https://gitlab.com/kei-space/clang/r547379.git $HOME/clang        
     - name: Setup Kernel
       run: |
          if [ ${{ inputs.kernel-url }} != false ]; then
