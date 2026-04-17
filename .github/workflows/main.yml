@@ -20,6 +20,8 @@ on:
         required: false
         default: 'git clone --depth=1 https://gitlab.com/PixelOS-Devices/playgroundtc -b 17 toolchain'
 
+env:
+  TZ: Asia/Jakarta
 jobs:
   build:
     runs-on: ubuntu-latest
