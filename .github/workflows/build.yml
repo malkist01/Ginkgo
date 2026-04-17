@@ -124,7 +124,7 @@ jobs:
          if [ ${{ inputs.aosp-clang }} == false ]; then
             echo "aosp-clang disable"
          else
-            export PATH=$HOME/clang/bin:$HOME/gcc-64/bin:$HOME/gcc-32/bin:$PATH
+            export PATH=$HOME/clang/bin:$PATH
          fi
          export KBUILD_BUILD_USER="malkis"
          export KBUILD_BUILD_HOST="android"
