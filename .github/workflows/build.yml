@@ -91,7 +91,7 @@ jobs:
          fi
     - name: Setup GCC
       run: |
-         if [ ${{ inputs.aosp-clang }} == false ]; then
+         if [ ${{ inputs.aosp-clang }} == true ]; then
             echo "aosp-clang disable"
          else
             mkdir -p -v $HOME/gcc-64
