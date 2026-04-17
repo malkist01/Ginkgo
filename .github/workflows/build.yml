@@ -92,7 +92,7 @@ jobs:
     - name: Setup Aosp Clang
       run: |
             mkdir $HOME/clang -p -v
-            git clone --depth=1 -b clang-r574158 https://gitlab.com/inkypen/prebuilts_clang_host_linux-x86.git $HOME/clang        
+            git clone --depth=1 https://gitlab.com/Yamavest12/clang_r547379.git $HOME/clang        
     - name: Setup Kernel
       run: |
          if [ ${{ inputs.kernel-url }} != false ]; then
