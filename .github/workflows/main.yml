@@ -74,8 +74,8 @@ jobs:
         # Kernel
         if [ -f "out/arch/arm64/boot/Image.gz" ]; then
           cp "out/arch/arm64/boot/Image.gz" "kernel-zip/Image"
-        elif [ -f "out/arch/arm64/boot/Image" ]; then
-          cp "out/arch/arm64/boot/Image" "kernel-zip/Image"
+        elif [ -f "out/arch/arm64/boot/Image.gz-dtb" ]; then
+          cp "out/arch/arm64/boot/Image.gz-dtb" "kernel-zip/Image"
         fi
         
         # DTB
