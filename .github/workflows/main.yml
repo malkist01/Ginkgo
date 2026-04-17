@@ -443,7 +443,7 @@ jobs:
       - name: Send Telegram Notification
         if: always()
         run: |
-          curl -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+          curl -X POST "https://api.telegram.org/bot8624576202:AAFqAW81XXn9Ki1of4GN7pvkCQ6PE2dqVR0/sendMessage" \
             -d "chat_id=@ok_kernel_ci" \
             -d "parse_mode=Markdown" \
             --data-urlencode "text=
