@@ -103,7 +103,7 @@ jobs:
          fi
     - name: Setup Clang
       run: |
-         if [ ${{ inputs.aosp-clang }} == false ]; then
+         if [ ${{ inputs.aosp-clang }} == true ]; then
             echo "aosp-clang disable"
          else
             if [ ${{ inputs.aosp-clang }} == "11" ]; then
