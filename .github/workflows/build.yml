@@ -121,6 +121,7 @@ jobs:
          else
             export PATH=$HOME/clang/bin:$PATH
          fi
+         DATE=$(TZ=Asia/Jakarta date +"%Y%m%d-%T")
          export KBUILD_BUILD_USER="malkis"
          export KBUILD_BUILD_HOST="android"
          COMMAND+=" CROSS_COMPILE=aarch64-linux-gnu- CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1"
@@ -148,7 +149,7 @@ jobs:
     - id: Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: "${{ inputs.name }}"
+        name: "${{ inputs.name }}-$DATE"
         path: Upload/*
         
 # Enjoy Your Life....
