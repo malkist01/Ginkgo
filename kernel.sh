@@ -4,9 +4,13 @@
 rm -rf kernel
 git clone $REPO -b $BRANCH kernel
 cd kernel
-wget https://raw.githubusercontent.com/rksuorg/kernel_patches/refs/heads/master/manual_hook/kernel-4.14.patch
-patch -p1 < kernel-4.14.patch
+
+echo "CONFIG_KSU=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+echo "CONFIG_KSU_MANUAL_HOOK=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+curl -LSs "https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Build_2nd/refs/heads/mainline/Patches/syscall_hook_patches.sh" | bash -s
+curl -LSs "https://raw.githubusercontent.com/JackA1ltman/NonGKI_Kernel_Build_2nd/refs/heads/mainline/Patches/backport_patches.sh" | bash -s
 curl https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh | bash
+
 LOCAL_DIR="$(pwd)/.."
 TC_DIR="${LOCAL_DIR}/toolchain"
 CLANG_DIR="${TC_DIR}/clang"
