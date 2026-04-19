@@ -4,6 +4,9 @@
 rm -rf kernel
 git clone $REPO -b $BRANCH kernel
 cd kernel
+wget https://raw.githubusercontent.com/rksuorg/kernel_patches/refs/heads/master/manual_hook/kernel-4.14.patch
+patch -p1 < kernel-4.14.patch
+curl https://raw.githubusercontent.com/backslashxx/KernelSU/refs/heads/master/kernel/setup.sh | bash
 LOCAL_DIR="$(pwd)/.."
 TC_DIR="${LOCAL_DIR}/toolchain"
 CLANG_DIR="${TC_DIR}/clang"
