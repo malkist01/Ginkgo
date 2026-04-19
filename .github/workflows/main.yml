@@ -1,0 +1,45 @@
+name: ginkgo-testing
+on:
+  workflow_dispatch:
+    inputs: 
+      repo:
+          description: 'Kernel source'
+          default: 'https://github.com/malkist01/Ginkgo'
+          required: true
+      branch:
+          description: 'Kernel source branch'
+          default: 'main'
+          required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04   # jangan pakai latest biar stabil
+
+    steps:
+    - name: Setup ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+          key: build-kernel
+          max-size: 2G     
+          
+    - name: Initializing environment
+      run: |
+          sudo apt update
+          sudo apt install -y \
+          bc bison ca-certificates curl flex gcc git libc6-dev libssl-dev \
+          openssl python-is-python3 ssh wget zip sudo make clang \
+          gcc-arm-linux-gnueabi software-properties-common build-essential \
+          libarchive-tools gcc-aarch64-linux-gnu libssl-dev libffi-dev \
+          libncurses5-dev zlib1g zlib1g-dev libreadline-dev libbz2-dev \
+          libsqlite3-dev make gcc pigz python3 cpio lld
+                
+    - name: Building Kernel
+      env:
+        TZ: Asia/Jakarta
+        REPO: ${{ github.event.inputs.repo }}
+        BRANCH: ${{ github.event.inputs.branch }}
+        chat_id: -1002287610863
+        token: 8624576202:AAFqAW81XXn9Ki1of4GN7pvkCQ6PE2dqVR0
+      run: |
+        wget https://raw.githubusercontent.com/malkist01/Ginkgo/main/kernel.sh
+        bash kernel.sh
