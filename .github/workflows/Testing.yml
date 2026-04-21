@@ -53,8 +53,8 @@ jobs:
       run: |
         cd $KERNEL_DIR
         echo "CLANG_DIR=$KERNEL_DIR/clang"
-        "$CLANG_URL" -O clang.tar.gz
-          mkdir -p "$CLANG_DIR" && tar -xf clang.tar.gz -C "$CLANG_DIR
+        wget "$CLANG_URL" -O clang.tar.gz
+        mkdir -p "$CLANG_DIR" && tar -xf clang.tar.gz -C "$CLANG_DIR
           
         git clone --depth=1 "$CLANG_URL" clang
         echo "CLANG_DIR=$KERNEL_DIR/clang" >> $GITHUB_ENV
