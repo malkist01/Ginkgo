@@ -21,7 +21,7 @@ jobs:
       KERNEL_BRANCH: main
       KERNEL_REPO: https://github.com/malkist01/ginkgo
       ANYKERNEL_REPO: https://github.com/malkist01/Anykernel3
-      CLANG_URL: https://gitlab.com/kei-space/clang/r547379.git
+      CLANG_URL: https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/4d2864f08ff2c290563fb903a5156e0504620bbe/clang-r563880c.tar.gz
       KSU_URL: https://raw.githubusercontent.com/Sorayukii/KernelSU-Next/stable/kernel/setup.sh
       KSU_BRANCH: hookless
 
@@ -52,8 +52,11 @@ jobs:
     - name: Clone clang
       run: |
         cd $KERNEL_DIR
-        git clone --depth=1 "$CLANG_URL" clang
-        echo "CLANG_DIR=$KERNEL_DIR/clang" >> $GITHUB_ENV
+        mkdir -p clang
+        wget -q "$CLANG_URL" -O clang.tar.gz
+        echo "Extracting clang to clang"
+        tar -xf clang.tar.gz -C clang
+        rm -f clang.tar.gz
 
     - name: Set up RKSU
       run: |
