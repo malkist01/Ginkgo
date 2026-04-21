@@ -63,7 +63,8 @@ jobs:
     - name: Generate defconfig
       run: |
         cd $KERNEL_DIR
-        CONFIG_NAME="${{ matrix.codename }}_defconfig"
+        patch -p1 < 4.14.patch
+        CONFIG_NAME="vendor/${{ matrix.codename }}_defconfig"
         DEFCONFIG_PATH="arch/arm64/configs/vendor/$CONFIG_NAME"
         echo "CONFIG_KSU=y" >> "${DEFCONFIG_PATH}"
         echo "CONFIG_KSU_TAMPER_SYSCALL_TABLE=y" >> "${DEFCONFIG_PATH}"
