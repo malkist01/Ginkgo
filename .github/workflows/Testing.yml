@@ -95,6 +95,9 @@ jobs:
         trap stop_handler ERR INT
 
         cd $KERNEL_DIR
+        echo "CONFIG_KSU=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "CONFIG_KSU_TAMPER_SYSCALL_TABLE=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "CONFIG_KSU_EXTRAS=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
         LOG_FILE=$KERNEL_DIR/build.log
         OUT_DIR=$KERNEL_DIR/out
         KERNEL_IMAGE_DIR=$OUT_DIR/arch/arm64/boot
