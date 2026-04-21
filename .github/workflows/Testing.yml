@@ -21,7 +21,7 @@ jobs:
       KERNEL_BRANCH: main
       KERNEL_REPO: https://github.com/malkist01/ginkgo
       ANYKERNEL_REPO: https://github.com/malkist01/Anykernel3
-      CLANG_URL: https://gitlab.com/kei-space/clang/r536225.git
+      CLANG_URL: https://gitlab.com/kei-space/clang/r547379.git
       KSU_URL: https://raw.githubusercontent.com/Sorayukii/KernelSU-Next/stable/kernel/setup.sh
       KSU_BRANCH: hookless
 
