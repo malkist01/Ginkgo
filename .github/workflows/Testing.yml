@@ -60,18 +60,6 @@ jobs:
         cd $KERNEL_DIR
         curl -LSs "$KSU_URL" | bash -s $KSU_BRANCH
 
-    - name: Generate defconfig
-      run: |
-        cd $KERNEL_DIR
-        patch -p1 < 4.14.patch
-        DEFCONFIG="ginkgo_defconfig"
-        DEFCONFIG_PATH="arch/arm64/configs/vendor/$DEFCONFIG"
-        echo "CONFIG_KSU=y" >> "${DEFCONFIG_PATH}"
-        echo "CONFIG_KSU_TAMPER_SYSCALL_TABLE=y" >> "${DEFCONFIG_PATH}"
-        echo "CONFIG_KSU_EXTRAS=y" >> "${DEFCONFIG_PATH}"
-        make O=out ARCH=arm64 "$DEFCONFIG"
-        mv out/.config "$DEFCONFIG_PATH"
-
     - name: Build kernel
       run: |
         escape_markdown_v2() { 
@@ -112,7 +100,7 @@ jobs:
         KERNEL_IMAGE_DIR=$OUT_DIR/arch/arm64/boot
         KERNEL_IMAGE=$KERNEL_IMAGE_DIR/Image.gz-dtb
         DTBO=$KERNEL_IMAGE_DIR/dtbo.img
-        DEFCONFIG="ginkgo_defconfig"
+        DEFCONFIG="vendor/ginkgo_defconfig"
         KERNEL_COMMIT_ID=$(git rev-parse --short=7 HEAD)
         ZIP_NAME="${KERNEL_VER}_${{ matrix.codename }}-allSU-$(date +%Y%m%d)-${KERNEL_COMMIT_ID}.zip"
         echo "ZIP_NAME=$ZIP_NAME" >> $GITHUB_ENV
@@ -125,7 +113,7 @@ jobs:
         export PATH="$CLANG_DIR/bin:$PATH"
         mkdir -p "$OUT_DIR"
 
-        make O="$OUT_DIR" ARCH=arm64 "vendor/$DEFCONFIG"
+        make O="$OUT_DIR" ARCH=arm64 "$DEFCONFIG"
         make -j$(nproc) O="$OUT_DIR" ARCH=arm64 \
           CC=clang LD=ld.lld AR=llvm-ar AS=llvm-as NM=llvm-nm \
           OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip \
