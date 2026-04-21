@@ -110,6 +110,7 @@ jobs:
 
         export KBUILD_BUILD_USER=ivy
         export KBUILD_BUILD_HOST="$KERNEL_COMMIT_ID"
+        export DEFCONFIG
         export PATH="$CLANG_DIR/bin:$PATH"
         mkdir -p "$OUT_DIR"
 
