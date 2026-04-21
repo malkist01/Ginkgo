@@ -15,7 +15,7 @@ jobs:
 
     env:
       TZ: Asia/Jakarta
-      BOT_TOKEN : 8624576202:AAFqAW81XXn9Ki1of4GN7pvkCQ6PE2dqVR0
+      BOT_TOKEN : 8736261216:AAFhWrQl8vyavRExCYz857yx6s8WZvxbLqs
       CHAT_ID: -1002287610863
       KERNEL_VER: AnjaniLaurens
       KERNEL_BRANCH: main
@@ -52,11 +52,12 @@ jobs:
     - name: Clone clang
       run: |
         cd $KERNEL_DIR
-        mkdir -p clang
-        wget -q "$CLANG_URL" -O clang.tar.gz
-        echo "Extracting clang to clang"
-        tar -xf clang.tar.gz -C clang
-        rm -f clang.tar.gz
+        echo "CLANG_DIR=$KERNEL_DIR/clang"
+        "$CLANG_URL" -O clang.tar.gz
+          mkdir -p "$CLANG_DIR" && tar -xf clang.tar.gz -C "$CLANG_DIR
+          
+        git clone --depth=1 "$CLANG_URL" clang
+        echo "CLANG_DIR=$KERNEL_DIR/clang" >> $GITHUB_ENV
 
     - name: Set up RKSU
       run: |
@@ -99,7 +100,17 @@ jobs:
 
         cd $KERNEL_DIR
         echo "CONFIG_KSU=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_SUS_MAP=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_OPEN_REDIRECT=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_ENABLE_LOG=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_SPOOF_UNAME=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_TRY_UMOUNT=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_SUS_KSTAT=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
         echo "CONFIG_KSU_SUSFS=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_SUS_PATH=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
+        echo "KSU_SUSFS_SUS_MOUNT=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
         echo "CONFIG_KSU_TAMPER_SYSCALL_TABLE=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
         echo "CONFIG_KSU_EXTRAS=y" >> ./arch/arm64/configs/vendor/ginkgo_defconfig
         LOG_FILE=$KERNEL_DIR/build.log
