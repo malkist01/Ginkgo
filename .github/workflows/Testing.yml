@@ -52,8 +52,9 @@ jobs:
     - name: Downloading Aosp clang
       run: |
         cd $KERNEL_DIR
+        CLANG_DIR="$KERNEL_DIR/clang"
         wget "$CLANG_URL" -O clang.tar.gz
-        mkdir -p clang && tar -xf clang.tar.gz -C clang   
+        mkdir -p "$CLANG_DIR" && tar -xf clang.tar.gz -C "$CLANG_DIR"
 
     - name: Set up RKSU
       run: |
@@ -121,7 +122,7 @@ jobs:
         export KBUILD_BUILD_USER=ivy
         export KBUILD_BUILD_HOST="$KERNEL_COMMIT_ID"
         export DEFCONFIG
-        export PATH="clang/bin:$PATH"
+        export PATH="$CLANG_DIR/bin:$PATH"
         mkdir -p "$OUT_DIR"
 
         make O="$OUT_DIR" ARCH=arm64 "$DEFCONFIG"
