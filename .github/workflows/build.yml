@@ -89,8 +89,12 @@ jobs:
              sudo swapon $SWAP_FILE
              unset SWAP_FILE
          fi
-    - name: Setup Aosp Clang
+    - name: Setup Gcc & Clang
       run: |
+            mkdir -p -v $HOME/gcc-64
+            git clone --depth=1 -b lineage-19.1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git $HOME/gcc-64
+            mkdir -p -v $HOME/gcc-32
+            git clone --depth=1 -b lineage-19.1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git $HOME/gcc-32
             mkdir $HOME/clang -p -v
             git clone --depth=1 https://gitlab.com/Yamavest12/clang_r547379.git $HOME/clang        
     - name: Setup Kernel
@@ -120,11 +124,13 @@ jobs:
             echo "aosp-clang disable"
          else
             export PATH=$HOME/clang/bin:$PATH
+            export LD_LIBRARY_PATH="$HOME/clang/lib:$LD_LIBRARY_PATH"
+            export KBUILD_BUILD_VERSION="1"
          fi
          DATE=$(TZ=Asia/Jakarta date +"%Y%m%d-%T")
          export KBUILD_BUILD_USER="malkis"
          export KBUILD_BUILD_HOST="android"
-         COMMAND+=" CROSS_COMPILE=aarch64-linux-gnu- CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1"
+         COMMAND+=" CROSS_COMPILE=aarch64-linux-gnu CROSS_COMPILE_COMPAT=arm-linux-gnueabi CLANG_TRIPLE=aarch64-linux-gnu CC=clang LD=ld.lld AR=llvm-ar AS=llvm-as NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip LLVM=1 LLVM_IAS=1"
          ${COMMAND}
     - name: AnyKernel3
       run: |
