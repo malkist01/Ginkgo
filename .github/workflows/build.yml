@@ -95,8 +95,9 @@ jobs:
             git clone --depth=1 -b lineage-19.1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git $HOME/gcc-64
             mkdir -p -v $HOME/gcc-32
             git clone --depth=1 -b lineage-19.1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git $HOME/gcc-32
+            aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/4d2864f08ff2c290563fb903a5156e0504620bbe/clang-r563880c.tar.gz
             mkdir $HOME/clang -p -v
-            git clone --depth=1 https://gitlab.com/Yamavest12/clang_r547379.git $HOME/clang        
+            tar -C $HOME/clang -zxf aosp-clang.tar.gz        
     - name: Setup Kernel
       run: |
          if [ ${{ inputs.kernel-url }} != false ]; then
