@@ -124,7 +124,7 @@ jobs:
             echo "aosp-clang disable"
          else
             export PATH=$HOME/clang/bin:$PATH
-            export LD_LIBRARY_PATH="$HOME/clang/lib:$LD_LIBRARY_PATH"
+            export PATH=$HOME/clang/bin:$HOME/gcc-64/bin:$HOME/gcc-32/bin:$PATH
             export KBUILD_BUILD_VERSION="1"
          fi
          DATE=$(TZ=Asia/Jakarta date +"%Y%m%d-%T")
