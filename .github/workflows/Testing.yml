@@ -22,8 +22,8 @@ jobs:
       KERNEL_REPO: https://github.com/malkist01/ginkgo
       ANYKERNEL_REPO: https://github.com/malkist01/Anykernel3
       CLANG_URL: https://gitlab.com/kei-space/clang/r547379.git
-      KSU_URL: https://raw.githubusercontent.com/Sorayukii/KernelSU-Next/stable/kernel/setup.sh
-      KSU_BRANCH: hookless
+      KSU_URL: https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/legacy_susfs/kernel/setup.sh
+      KSU_BRANCH: legacy_susfs
 
     steps:
     - name: Install dependencies
