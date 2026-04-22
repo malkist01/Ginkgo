@@ -21,7 +21,7 @@ jobs:
       KERNEL_BRANCH: main
       KERNEL_REPO: https://github.com/malkist01/ginkgo
       ANYKERNEL_REPO: https://github.com/malkist01/Anykernel3
-      CLANG_URL: https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/4d2864f08ff2c290563fb903a5156e0504620bbe/clang-r563880c.tar.gz
+      CLANG_URL: https://gitlab.com/kei-space/clang/r547379.git
       KSU_URL: https://raw.githubusercontent.com/Sorayukii/KernelSU-Next/stable/kernel/setup.sh
       KSU_BRANCH: hookless
 
@@ -49,12 +49,11 @@ jobs:
         git clone --depth=1 -b "${{ matrix.codename }}" "$ANYKERNEL_REPO" AnyKernel3
         echo "ANYKERNEL_DIR=$KERNEL_DIR/AnyKernel3" >> $GITHUB_ENV
 
-    - name: Downloading Aosp clang
+    - name: Clone clang
       run: |
         cd $KERNEL_DIR
-        CLANG_DIR="$KERNEL_DIR/clang"
-        wget "$CLANG_URL" -O clang.tar.gz
-        mkdir -p "$CLANG_DIR" && tar -xf clang.tar.gz -C "$CLANG_DIR"
+        git clone --depth=1 "$CLANG_URL" clang
+        echo "CLANG_DIR=$KERNEL_DIR/clang" >> $GITHUB_ENV
 
     - name: Set up RKSU
       run: |
