@@ -81,8 +81,7 @@ jobs:
       run: |
          sudo timedatectl set-timezone Asia/Jakarta
          sudo apt update -y
-         sudo apt-get update -qq
-         sudo apt-get install -y --no-install-recommends python3-pip git zip unzip gcc g++ make ninja-build file bc bison flex libfl-dev libssl-dev libelf-dev wget build-essential python3-dev python3-setuptools rsync ccache llvm-dev libncurses6 libfdt-dev binwalk
+         sudo apt-get install --no-install-recommends -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu lld llvm g++-aarch64-linux-gnu
          aria2c -q https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh && NONINTERACTIVE=1 bash ./uninstall.sh -f -q
          if [ -f /bin/swapon ]; then
              export SWAP_FILE=$(swapon --show=NAME | tail -n 1)
@@ -130,9 +129,8 @@ jobs:
       run: |        
          mkdir -p -v out
          cd kernel-dir
-          export PATH=$HOME/gcc-64/bin:$HOME/gcc-32/bin:$PATH
           make O=out ARCH=arm64 vendor/ginkgo_defconfig
-          make -j$(nproc --all) O=out CROSS_COMPILE_ARM32=arm-eabi- CROSS_COMPILE=aarch64-elf- AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump CC=aarch64-elf-gcc STRIP=llvm-strip CONFIG_DEBUG_SECTION_MISMATCH=y
+          make -j$(nproc --all) O=out CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-androideabi-
     - name: AnyKernel3
       run: |
           git clone -b ginkgo ${{ inputs.AK3 }} AnyKernel3
