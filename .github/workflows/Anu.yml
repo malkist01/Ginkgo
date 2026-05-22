@@ -96,14 +96,10 @@ jobs:
          fi
     - name: Setup GCC
       run: |
-         if [ ${{ inputs.aosp-clang }} == false ]; then
-            echo "aosp-clang disable"
-         else
             mkdir -p -v $HOME/gcc-64
             git clone --depth=1 https://github.com/StatiXOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-elf $HOME/gcc-64
             mkdir -p -v $HOME/gcc-32
             git clone --depth=1 https://github.com/StatiXOS/android_prebuilts_gcc_linux-x86_arm_arm-eabi $HOME/gcc-32
-         fi
     - name: Setup Kernel
       run: |
          if [ ${{ inputs.kernel-url }} != false ]; then
