@@ -82,8 +82,8 @@ jobs:
       uses: actions/checkout@v4
     - name: Setup Packages
       run: |
-         sudo timedatectl set-timezone Asia/Jakarta \
-         sudo apt-get install -y \
+         timedatectl set-timezone Asia/Jakarta \
+         apt-get install -y \
          clang lld llvm \
          gcc-aarch64-linux-gnu \
          gcc-arm-linux-gnueabi \
