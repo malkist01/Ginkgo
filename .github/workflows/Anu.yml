@@ -51,6 +51,9 @@ on:
 jobs:
   linext-24:
     runs-on: ${{ inputs.ubuntu }}
+    container: 
+      image: debian:sid
+      options: --user root
     steps:
     - name: Checkin
       run: |
@@ -81,7 +84,14 @@ jobs:
       run: |
          sudo timedatectl set-timezone Asia/Jakarta
          sudo apt update -y
-         sudo apt-get install --no-install-recommends -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu lld llvm g++-aarch64-linux-gnu
+         sudo apt-get install -y \
+         clang lld llvm \
+         gcc-aarch64-linux-gnu \
+         gcc-arm-linux-gnueabi \
+         binutils-aarch64-linux-gnu \
+         binutils-arm-linux-gnueabi \
+         make bc bison flex libssl-dev python3 \
+         git zip curlie build-essential
          aria2c -q https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh && NONINTERACTIVE=1 bash ./uninstall.sh -f -q
          if [ -f /bin/swapon ]; then
              export SWAP_FILE=$(swapon --show=NAME | tail -n 1)
