@@ -82,14 +82,8 @@ jobs:
       uses: actions/checkout@v4
     - name: Setup Packages
       run: |
-         apt-get install -y \
-         clang lld llvm \
-         gcc-aarch64-linux-gnu \
-         gcc-arm-linux-gnueabi \
-         binutils-aarch64-linux-gnu \
-         binutils-arm-linux-gnueabi \
-         make bc bison flex libssl-dev python3 \
-         git zip curlie build-essential
+         apt-get install -y
+         apt install clang lld llvm gcc-aarch64-linux-gnu gcc-arm-linux-gnueabi binutils-aarch64-linux-gnu binutils-arm-linux-gnueabi make bc bison flex libssl-dev python3 git zip build-essential
     - name: Setup GCC
       run: |
          if [ ${{ inputs.aosp-clang }} == false ]; then
