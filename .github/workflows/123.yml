@@ -46,7 +46,7 @@ jobs:
       run: |
          sudo apt-get update
          ${{ inputs.apt-get }}
-         git clone --depth=1 ${{ inputs.kernel-source }} -b ${{ inputs.kernel-config }} kernel-dir
+         git clone --depth=1 -b ${{ inputs.kernel-branch }} ${{ inputs.kernel-source }} ${{ inputs.kernel-config }} kernel-dir
          mkdir out -p -v
          cd kernel-dir
          if [ ${{ inputs.compiler }} == gcc ]; then
