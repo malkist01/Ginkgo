@@ -13,11 +13,6 @@ on:
         default: '4.14-Anjani-susfs'
         required: true
         type: string
-      apt-get:
-        description: 'apt-get'
-        default: 'sudo apt-get install --no-install-recommends -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu lld llvm g++-aarch64-linux-gnu'
-        required: true
-        type: string
       kernel-source:
         description: 'kernel-source'
         default: 'https://github.com/malkist01/Ginkgo.git'
@@ -44,8 +39,20 @@ jobs:
     steps:
     - name: Compile
       run: |
-         sudo apt-get update
-         ${{ inputs.apt-get }}
+         sudo timedatectl set-timezone Asia/Jakarta
+         sudo apt update -y
+         sudo apt-get install --no-install-recommends -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu lld llvm g++-aarch64-linux-gnu
+         aria2c -q https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh && NONINTERACTIVE=1 bash ./uninstall.sh -f -q
+         if [ -f /bin/swapon ]; then
+             export SWAP_FILE=$(swapon --show=NAME | tail -n 1)
+             sudo swapoff $SWAP_FILE
+             sudo rm $SWAP_FILE
+             sudo fallocate -l 16G $SWAP_FILE
+             sudo chmod 600 $SWAP_FILE
+             sudo mkswap $SWAP_FILE
+             sudo swapon $SWAP_FILE
+             unset SWAP_FILE
+         fi
          git clone --depth=1 ${{ inputs.kernel-source }} -b ${{ inputs.kernel-branch }} kernel-dir
          mkdir out -p -v
          cd kernel-dir
