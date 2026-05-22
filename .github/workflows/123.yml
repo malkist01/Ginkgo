@@ -80,7 +80,7 @@ jobs:
       run: |
          sudo timedatectl set-timezone Asia/Jakarta
          sudo apt update -y
-         sudo apt-get install --no-install-recommends -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu-20 lld-20 llvm-20 g++-aarch64-linux-gnu-20
+         sudo apt-get install --no-install-recommends -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu lld llvm  g++-aarch64-linux-gnu
          sudo apt install clang-tidy-20 clang-format-20 clang-tools-20 llvm-20-dev lld-20 lldb-20 llvm-20-tools libomp-20-dev libc++-20-dev libc++abi-20-dev libclang-common-20-dev libclang-20-dev libclang-cpp20-dev liblldb-20-dev libunwind-20-dev
          aria2c -q https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh && NONINTERACTIVE=1 bash ./uninstall.sh -f -q
          if [ -f /bin/swapon ]; then
