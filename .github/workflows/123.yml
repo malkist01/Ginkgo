@@ -43,7 +43,7 @@ jobs:
   linext-24:
     runs-on: ${{ inputs.ubuntu }}
     container: 
-      image: debian
+      image: debian:bookworm
       options: --user root
 
     steps:
