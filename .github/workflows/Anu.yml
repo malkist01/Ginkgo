@@ -95,10 +95,45 @@ jobs:
          fi
     - name: Setup GCC
       run: |
+         if [ ${{ inputs.aosp-clang }} == false ]; then
+            echo "aosp-clang disable"
+         else
             mkdir -p -v $HOME/gcc-64
-            git clone --depth=1 https://github.com/StatiXOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-elf $HOME/gcc-64
+            git clone -b lineage-19.1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9.git $HOME/gcc-64
             mkdir -p -v $HOME/gcc-32
-            git clone --depth=1 https://github.com/StatiXOS/android_prebuilts_gcc_linux-x86_arm_arm-eabi $HOME/gcc-32
+            git clone -b lineage-19.1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9.git $HOME/gcc-32
+         fi
+    - name: Setup Clang
+      run: |
+         if [ ${{ inputs.aosp-clang }} == false ]; then
+            echo "aosp-clang disable"
+         else
+            if [ ${{ inputs.aosp-clang }} == "10" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/llvm-r399163b/clang-r399163.tar.gz
+            elif [ ${{ inputs.aosp-clang }} == "11" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/llvm-r416183/clang-r399163b.tar.gz
+            elif [ ${{ inputs.aosp-clang }} == "12" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/llvm-r416183/clang-r416183.tar.gz
+            elif [ ${{ inputs.aosp-clang }} == "13" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android13-release/clang-r450784d.tar.gz
+            elif [ ${{ inputs.aosp-clang }} == "17" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/android14-release/clang-r487747c.tar.gz
+            elif [ ${{ inputs.aosp-clang }} == "18" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r522817.tar.gz
+            elif [ ${{ inputs.aosp-clang }} == "19" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r530567.tar.gz
+            elif [ ${{ inputs.aosp-clang }} == "20" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r547379.tar.gz          
+            elif [ ${{ inputs.aosp-clang }} == "21" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/0998f421320ae02fddabec8a78b91bf7620159f6/clang-r563880.tar.gz         
+            elif [ ${{ inputs.aosp-clang }} == "22" ]; then
+                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/105aba85d97a53d364585ca755752dae054b49e8/clang-r584948b.tar.gz
+            elif [ ${{ inputs.aosp-clang }} != false ]; then
+                aria2c -o aosp-clang.tar.gz ${{ inputs.aosp-clang }}
+            fi
+            mkdir $HOME/clang -p -v
+            tar -C $HOME/clang -zxf aosp-clang.tar.gz
+         fi
     - name: Setup Kernel
       run: |
          if [ ${{ inputs.kernel-url }} != false ]; then
@@ -128,12 +163,35 @@ jobs:
     - name: Compile
       run: |        
          mkdir -p -v out
-         cd kernel-dir
-          make O=out ARCH=arm64 vendor/ginkgo_defconfig
-          make -j$(nproc --all) O=out CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-androideabi-
+         if [ ${{ inputs.kernel-url }} != false ]; then
+            cd kernel-dir
+            COMMAND="make -j$(nproc --all) ${{ inputs.kernel-config }} ARCH=arm64 CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip OBJCOPY=llvm-objcopy O=../out all"
+         fi
+         if [ ${{ inputs.kernel-url }} == false ]; then
+            COMMAND="make -j$(nproc --all) ${{ inputs.kernel-config }} ARCH=arm64 CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip OBJCOPY=llvm-objcopy O=out all"
+         fi
+         if [ ${{ inputs.aosp-clang }} == false ]; then
+            echo "aosp-clang disable"
+         else
+            export PATH=$HOME/clang/bin:$HOME/gcc-64/bin:$HOME/gcc-32/bin:$PATH
+         fi
+         export KBUILD_BUILD_USER="dark"
+         export KBUILD_BUILD_HOST="side"
+         if [ ${{ inputs.compiler }} == gcc ]; then
+            COMMAND+=" CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+         elif [ ${{ inputs.compiler }} == clang ] && [ ${{ inputs.aosp-clang }} == false ]; then
+            COMMAND+=" CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CC=clang"
+         elif [ ${{ inputs.compiler }} == clang ] && [ ${{ inputs.aosp-clang }} != false ]; then
+            COMMAND+=" CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC=clang"
+         elif [ ${{ inputs.compiler }} == llvm ] && [ ${{ inputs.aosp-clang }} == false ]; then
+            COMMAND+=" CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CC=clang LLVM=1 LLVM_IAS=0 AR=llvm-ar NM=llvm-nm STRIP=llvm-strip OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar"
+         elif [ ${{ inputs.compiler }} == llvm ] && [ ${{ inputs.aosp-clang }} != false ]; then
+            COMMAND+=" CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- CLANG_TRIPLE=aarch64-linux-gnu- CC=clang LLVM=1 LLVM_IAS=0 AR=llvm-ar NM=llvm-nm STRIP=llvm-strip OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar"
+         fi
+         ${COMMAND}
     - name: AnyKernel3
       run: |
-          git clone -b ginkgo ${{ inputs.AK3 }} AnyKernel3
+          git clone ${{ inputs.AK3 }} AnyKernel3
           rm -rf AnyKernel3/.git AnyKernel3/.github AnyKernel3/LICENSE AnyKernel3/README.md AnyKernel3/modules AnyKernel3/patch AnyKernel3/ramdisk
           if [[ -f out/arch/arm64/boot/Image.gz-dtb ]]; then
             cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/Image.gz-dtb
@@ -158,3 +216,4 @@ jobs:
         path: Upload/*
         
 # Enjoy Your Life....
+....
