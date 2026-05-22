@@ -43,7 +43,7 @@ jobs:
   linext-24:
     runs-on: ${{ inputs.ubuntu }}
     container: 
-      image: debian:bookworm
+      image: debian:sid
       options: --user root
 
     steps:
@@ -91,7 +91,7 @@ jobs:
               OBJDUMP=llvm-objdump \
               STRIP=llvm-strip \
               LLVM=1 \
-              LLVM_IAS=0 \
+              LLVM_IAS=1 \
               KCFLAGS="-fcommon -Qunused-arguments -Wno-everything" \
               EXTRA_CFLAGS="-fcommon -Qunused-arguments -Wno-everything" \
               CLANG_TRIPLE=aarch64-linux-gnu- \
