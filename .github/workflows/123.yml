@@ -1,5 +1,5 @@
-# linex Project
-name: linex Project v0.2-ub
+name: linext Compiler v2.9-SID
+
 on:
   workflow_dispatch:
     inputs:
@@ -8,85 +8,121 @@ on:
         default: 'ubuntu-latest'
         required: true
         type: string
+
       name:
         description: 'Name'
-        default: '4.14-Anjani-susfs'
+        default: '4.9-kernel'
         required: true
         type: string
-      kernel-source:
-        description: 'kernel-source'
-        default: 'https://github.com/malkist01/Ginkgo.git'
+      
+      kernel-url:
+        description: 'Kernel-url'
+        default: 'https://github.com/PainKiller3/android_kernel_xiaomi_sdm845.git'
         required: true
         type: string
+
       kernel-branch:
-        description: 'kernel-branch'
-        default: 'susfs'
+        description: 'Kernel-branch'
+        default: 'ten'
         required: true
         type: string
+
       kernel-config:
-        description: 'kernel-config'
-        default: 'vendor/ginkgo_defconfig'
+        description: 'Kernel-config'
+        default: 'beryllium_defconfig'
         required: true
         type: string
-      compiler:
-        description: 'compiler | gcc|clang|llvm'
-        default: 'gcc'
+
+      AK3:
+        description: 'AnyKernel3'
+        default: 'https://github.com/osm0sis/AnyKernel3'
         required: true
         type: string
+
 jobs:
-  linex-compiler-example:
+  linext-24:
     runs-on: ${{ inputs.ubuntu }}
+    container: 
+      image: debian:sid
+      options: --user root
+
     steps:
+    # =========================
+    # Checkout
+    # =========================
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # =========================
+    # Setup Packages (FIXED)
+    # =========================
+    - name: Setup Packages
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+            clang lld llvm \
+            gcc-aarch64-linux-gnu \
+            gcc-arm-linux-gnueabi \
+            binutils-aarch64-linux-gnu \
+            binutils-arm-linux-gnueabi \
+            make bc bison flex libssl-dev python3 \
+            git zip curlie build-essential
+
+    # =========================
+    # Kernel Clone (FIXED BRANCH)
+    # =========================
+    - name: Setup Kernel
+      run: |
+        git clone --depth=1 -b ${{ inputs.kernel-branch }} ${{ inputs.kernel-url }} kernel-dir
+
+    # =========================
+    # Build Kernel
+    # =========================
     - name: Compile
       run: |
-         sudo timedatectl set-timezone Asia/Jakarta
-         sudo apt update -y
-         sudo apt-get install --no-install-recommends -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu lld llvm g++-aarch64-linux-gnu
-         aria2c -q https://raw.githubusercontent.com/Homebrew/install/master/uninstall.sh && NONINTERACTIVE=1 bash ./uninstall.sh -f -q
-         if [ -f /bin/swapon ]; then
-             export SWAP_FILE=$(swapon --show=NAME | tail -n 1)
-             sudo swapoff $SWAP_FILE
-             sudo rm $SWAP_FILE
-             sudo fallocate -l 16G $SWAP_FILE
-             sudo chmod 600 $SWAP_FILE
-             sudo mkswap $SWAP_FILE
-             sudo swapon $SWAP_FILE
-             unset SWAP_FILE
-         fi
-         git clone --depth=1 ${{ inputs.kernel-source }} -b ${{ inputs.kernel-branch }} kernel-dir
-         mkdir out -p -v
-         cd kernel-dir
-         if [ ${{ inputs.compiler }} == gcc ]; then
-            make -j$(nproc --all) ${{ inputs.kernel-config }} ARCH=arm64 O=../out all CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-
-         elif [ ${{ inputs.compiler }} == clang ]; then
-            make -j$(nproc --all) ${{ inputs.kernel-config }} ARCH=arm64 O=../out all CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CC=clang
-         elif [ ${{ inputs.compiler }} == llvm ]; then
-            make -j$(nproc --all) ${{ inputs.kernel-config }} ARCH=arm64 O=../out all CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CC=clang LLVM=1 LLVM_IAS=0 AR=llvm-ar NM=llvm-nm STRIP=llvm-strip OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump READELF=llvm-readelf HOSTCC=clang HOSTCXX=clang++ HOSTAR=llvm-ar
-         fi
+        mkdir -p out
+        cd kernel-dir
+
+        export ARCH=arm64
+        export SUBARCH=arm64
+        export KBUILD_BUILD_USER="linex"
+        export KBUILD_BUILD_HOST="Project"
+
+        make -j$(nproc --all) ${{ inputs.kernel-config }} O=out all \
+              CC=clang \
+              LD=ld.lld \
+              AR=llvm-ar \
+              NM=llvm-nm \
+              OBJCOPY=llvm-objcopy \
+              OBJDUMP=llvm-objdump \
+              STRIP=llvm-strip \
+              LLVM=1 \
+              LLVM_IAS=0 \
+              KCFLAGS="-fcommon -Qunused-arguments -Wno-everything" \
+              EXTRA_CFLAGS="-fcommon -Qunused-arguments -Wno-everything" \
+              CLANG_TRIPLE=aarch64-linux-gnu- \
+              CROSS_COMPILE=aarch64-linux-gnu- \
+              CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee $OUT_DIR/build.log
+
+
+    # =========================
+    # AnyKernel3
+    # =========================
     - name: AnyKernel3
       run: |
-          git clone -b ginkgo https://github.com/malkist01/AnyKernel3 AnyKernel3
-          rm -rf AnyKernel3/.git AnyKernel3/.github AnyKernel3/LICENSE AnyKernel3/README.md AnyKernel3/modules AnyKernel3/patch AnyKernel3/ramdisk
-          if [[ -f out/arch/arm64/boot/Image.gz-dtb ]]; then
-            cp out/arch/arm64/boot/Image.gz-dtb AnyKernel3/Image.gz-dtb
-          elif [[ -f out/arch/arm64/boot/Image-dtb ]]; then
-            cp out/arch/arm64/boot/Image-dtb AnyKernel3/Image-dtb
-          elif [[ -f out/arch/arm64/boot/Image.gz ]]; then
-            cp out/arch/arm64/boot/Image.gz AnyKernel3/Image.gz
-          elif [[ -f out/arch/arm64/boot/Image ]]; then
-            cp out/arch/arm64/boot/Image AnyKernel3/Image
-          fi
-          if [ -f out/arch/arm64/boot/dtbo.img ]; then
-            cp out/arch/arm64/boot/dtbo.img AnyKernel3/dtbo.img
-          fi
+        git clone ${{ inputs.AK3 }} AnyKernel3
+
+        cp out/arch/arm64/boot/Image* AnyKernel3/ 2>/dev/null || true
+        cp out/arch/arm64/boot/dtb* AnyKernel3/ 2>/dev/null || true
+
+        cd AnyKernel3
+        zip -r9 ../kernel.zip *
+
+    # =========================
+    # Upload
+    # =========================
     - name: Upload
-      run: |
-          mkdir Upload
-          cp -rf AnyKernel3/* Upload
-    - id: Artifact
       uses: actions/upload-artifact@v4
       with:
         name: "${{ inputs.name }}"
-        path: Upload/*
-        
-# Enjoy Your Life....
+        path: kernel.zip
