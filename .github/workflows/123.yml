@@ -92,8 +92,7 @@ jobs:
               STRIP=llvm-strip \
               LLVM=1 \
               LLVM_IAS=1 \
-              CROSS_COMPILE=aarch64-linux-gnu- \
-              CROSS_COMPILE_ARM32=arm-linux-gnueabi- 2>&1 | tee $OUT_DIR/build.log
+              CROSS_COMPILE=aarch64-linux-gnu- 2>&1 | tee $OUT_DIR/build.log
 
 
     # =========================
