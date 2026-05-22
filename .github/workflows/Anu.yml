@@ -52,7 +52,7 @@ jobs:
   linext-24:
     runs-on: ${{ inputs.ubuntu }}
     container: 
-      image: debian:sid
+      image: debian:bookworm
       options: --user root
     steps:
     - name: Checkin
