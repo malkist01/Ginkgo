@@ -82,8 +82,7 @@ jobs:
       uses: actions/checkout@v4
     - name: Setup Packages
       run: |
-         sudo timedatectl set-timezone Asia/Jakarta
-         sudo apt update -y
+         sudo timedatectl set-timezone Asia/Jakarta \
          sudo apt-get install -y \
          clang lld llvm \
          gcc-aarch64-linux-gnu \
@@ -188,7 +187,7 @@ jobs:
          export KBUILD_BUILD_USER="dark"
          export KBUILD_BUILD_HOST="side"
          if [ ${{ inputs.compiler }} == gcc ]; then
-            COMMAND+=" CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi-"
+            COMMAND+=" CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi-  CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm OBJCOPY=llvm-objcopy OBJDUMP=llvm-objdump STRIP=llvm-strip LLVM=1 LLVM_IAS=0 KCFLAGS=-fcommon -Qunused-arguments -Wno-everything EXTRA_CFLAGS=-fcommon -Qunused-arguments -Wno-everything"
          elif [ ${{ inputs.compiler }} == clang ] && [ ${{ inputs.aosp-clang }} == false ]; then
             COMMAND+=" CROSS_COMPILE=aarch64-linux-gnu- CROSS_COMPILE_ARM32=arm-linux-gnueabi- CROSS_COMPILE_COMPAT=arm-linux-gnueabi- CC=clang"
          elif [ ${{ inputs.compiler }} == clang ] && [ ${{ inputs.aosp-clang }} != false ]; then
