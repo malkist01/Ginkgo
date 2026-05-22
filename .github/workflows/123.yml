@@ -83,13 +83,8 @@ jobs:
         export KBUILD_BUILD_HOST="Project"
 
         make -j$(nproc --all) ${{ inputs.kernel-config }} O=out all \
-              CC=clang \
+              CC="ccache clang" \
               LD=ld.lld \
-              AR=llvm-ar \
-              NM=llvm-nm \
-              OBJCOPY=llvm-objcopy \
-              OBJDUMP=llvm-objdump \
-              STRIP=llvm-strip \
               LLVM=1 \
               LLVM_IAS=1 \
               CROSS_COMPILE=aarch64-linux-gnu- 2>&1 | tee $OUT_DIR/build.log
