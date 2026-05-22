@@ -11,31 +11,31 @@ on:
 
       name:
         description: 'Name'
-        default: '4.9-kernel'
+        default: '4.14-kernel'
         required: true
         type: string
       
       kernel-url:
         description: 'Kernel-url'
-        default: 'https://github.com/PainKiller3/android_kernel_xiaomi_sdm845.git'
+        default: 'https://github.com/malkist01/Ginkgo.git'
         required: true
         type: string
 
       kernel-branch:
         description: 'Kernel-branch'
-        default: 'ten'
+        default: 'susfs'
         required: true
         type: string
 
       kernel-config:
         description: 'Kernel-config'
-        default: 'beryllium_defconfig'
+        default: 'vendor/ginkgo_defconfig'
         required: true
         type: string
 
       AK3:
         description: 'AnyKernel3'
-        default: 'https://github.com/osm0sis/AnyKernel3'
+        default: 'https://github.com/malkist01/AnyKernel3'
         required: true
         type: string
 
@@ -104,7 +104,7 @@ jobs:
     # =========================
     - name: AnyKernel3
       run: |
-        git clone ${{ inputs.AK3 }} AnyKernel3
+        git clone -b ginkgo ${{ inputs.AK3 }} AnyKernel3
 
         cp out/arch/arm64/boot/Image* AnyKernel3/ 2>/dev/null || true
         cp out/arch/arm64/boot/dtb* AnyKernel3/ 2>/dev/null || true
