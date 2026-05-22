@@ -1,111 +1,55 @@
-name: linext Compiler v2.9-SID
+name: CI (with KernelSU)
 
 on:
   workflow_dispatch:
     inputs:
-      ubuntu:
-        description: 'Run on'
-        default: 'ubuntu-latest'
-        required: true
-        type: string
-
-      name:
-        description: 'Name'
-        default: '4.14-kernel'
-        required: true
-        type: string
-      
-      kernel-url:
-        description: 'Kernel-url'
-        default: 'https://github.com/malkist01/Ginkgo.git'
-        required: true
-        type: string
-
       kernel-branch:
-        description: 'Kernel-branch'
-        default: 'susfs'
         required: true
         type: string
-
-      kernel-config:
-        description: 'Kernel-config'
-        default: 'vendor/ginkgo_defconfig'
+      release-type:
         required: true
-        type: string
-
-      AK3:
-        description: 'AnyKernel3'
-        default: 'https://github.com/malkist01/AnyKernel3'
+        type: choice
+        options:
+        - susfs
+        - main
+        default: 'main'
+      device-codename:
         required: true
-        type: string
+        type: choice
+        options:
+        - ginkgo
+        - willow
 
+env:
+ TZ: Asia/Jakarta
 jobs:
-  linext-24:
-    runs-on: ${{ inputs.ubuntu }}
-    container: 
-      image: debian:sid
-      options: --user root
-
+  build-kernel:
+    name: Build Kernel with KernelSU
+    runs-on: ubuntu-latest
     steps:
-    # =========================
-    # Setup Packages (FIXED)
-    # =========================
-    - name: Setup Packages
-      run: |
-            apt-get update
-            apt-get install -y \
-            clang lld llvm \
-            gcc-aarch64-linux-gnu \
-            gcc-arm-linux-gnueabi \
-            binutils-aarch64-linux-gnu \
-            binutils-arm-linux-gnueabi \
-            make bc bison flex libssl-dev python3 \
-            git zip build-essential
+      - name: Display parameters
+        uses: m-s-abeer/update-gha-summary-with-workflow-inputs@v1
 
-    # =========================
-    # Kernel Clone (FIXED BRANCH)
-    # =========================
-    - name: Setup Kernel
-      run: |
-        git clone --depth=1 -b ${{ inputs.kernel-branch }} ${{ inputs.kernel-url }} kernel-dir
+      - name: Build
+        uses: frstprjkt/kernel_actions@main
+        with:
+          kernel-url: https://github.com/malkist01/Ginkgo
+          kernel-branch: ${{ github.event.inputs.kernel-branch }}
 
-    # =========================
-    # Build Kernel
-    # =========================
-    - name: Compile
-      run: |
-        mkdir -p out
-        cd kernel-dir
+          arch: arm64
+          defconfig: vendor/ginkgo_defconfig
+          extra-args: LLVM=1 LLVM_IAS=1 KBUILD_BUILD_USER=malkist
 
-        export ARCH=arm64
-        export SUBARCH=arm64
-        export KBUILD_BUILD_USER="linex"
-        export KBUILD_BUILD_HOST="Project"
+          ksu: true
+          ksu-url: https://github.com/backslashxx/KernelSU
+          ksu-version: master
 
-        make -j$(nproc --all) ${{ inputs.kernel-config }} O=out all \
-              CROSS_COMPILE=aarch64-linux-gnu- \
-              CROSS_COMPILE_ARM32=arm-linux-gnueabi- \
-              CROSS_COMPILE_COMPAT=arm-linux-gnueabi- 2>&1 | tee $OUT_DIR/build.log
+          aosp-gcc: true
+          aosp-clang: true
+          aosp-clang-version: r563880c
 
+          anykernel3: true
+          anykernel3-url: https://github.com/malkist01/AnyKernel3
+          anykernel3-branch: ${{ github.event.inputs.device-codename }}
 
-    # =========================
-    # AnyKernel3
-    # =========================
-    - name: AnyKernel3
-      run: |
-        git clone -b ginkgo ${{ inputs.AK3 }} AnyKernel3
-
-        cp out/arch/arm64/boot/Image* AnyKernel3/ 2>/dev/null || true
-        cp out/arch/arm64/boot/dtb* AnyKernel3/ 2>/dev/null || true
-
-        cd AnyKernel3
-        zip -r9 ../kernel.zip *
-
-    # =========================
-    # Upload
-    # =========================
-    - name: Upload
-      uses: actions/upload-artifact@v4
-      with:
-        name: "${{ inputs.name }}"
-        path: kernel.zip
+          package-name: Anjani-ksu_$(date +%d%H%M)_${{ github.event.inputs.device-codename }}-${{ github.event.inputs.release-type }}
