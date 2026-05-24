@@ -127,9 +127,9 @@ jobs:
                 aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r522817.tar.gz
             elif [ ${{ inputs.aosp-clang }} == "19" ]; then
                 aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r530567.tar.gz
-            elif [ ${{ inputs.aosp-clang }} == "20" ]; then
-                aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r547379.tar.gz          
-            elif [ ${{ inputs.aosp-clang }} == "21" ]; then
+            elif [ ${{ inputs.aosp-clang }} == "Webx" ]; then
+                aria2c -o aosp-clang.tar.gz https://github.com/XSans0/WeebX-Clang/releases/download/WeebX-Clang-20.0.0git-release/WeebX-Clang-20.0.0git.tar.gz          
+            elif [ ${{ inputs.aosp-clang }} == "aosp" ]; then
                 aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/4d2864f08ff2c290563fb903a5156e0504620bbe/clang-r563880c.tar.gz         
             elif [ ${{ inputs.aosp-clang }} == "22" ]; then
                 aria2c -o aosp-clang.tar.gz https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/105aba85d97a53d364585ca755752dae054b49e8/clang-r584948b.tar.gz
