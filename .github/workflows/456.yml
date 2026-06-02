@@ -15,17 +15,17 @@ on:
         type: string
       compiler:
         description: 'Compiler | gcc|clang|llvm'
-        default: 'clang'
+        default: 'llvm'
         required: true
         type: string
       aosp-clang:
         description: 'Clang | false for disable'
-        default: '16'
+        default: 'aosp'
         required: true
         type: string
       kernel-url:
         description: 'Kernel-url'
-        default: 'https://github.com/malkist01/Ginkgo.git'
+        default: 'https://github.com/malkist01/G4.git'
         required: true
         type: string
       kernel-branch:
@@ -74,8 +74,6 @@ jobs:
          echo "kernel-config: ${{ inputs.kernel-config }}"
          echo "disable-lto: ${{ inputs.disable-lto }}"
          echo "Teletubies Project"
-    - name: Checkout
-      uses: actions/checkout@v4
     - name: Setup Packages
       run: |
          sudo timedatectl set-timezone Asia/Jakarta
