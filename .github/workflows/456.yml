@@ -10,7 +10,7 @@ on:
         type: string
       name:
         description: 'Name'
-        default: '4.14.356-Teletubies'
+        default: '4.14.356-Teletubies-susfs'
         required: true
         type: string
       compiler:
@@ -25,7 +25,7 @@ on:
         type: string
       kernel-url:
         description: 'Kernel-url'
-        default: 'https://github.com/malkist01/G4.git'
+        default: 'https://github.com/malkist01/Ginkgo.git'
         required: true
         type: string
       kernel-branch:
